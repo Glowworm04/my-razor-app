@@ -1,0 +1,104 @@
+﻿@page
+@model InternerShop.Pages.Admin.Users.IndexModel
+@{
+    ViewData["Title"] = "Управление пользователями";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Пользователи</h2>
+</div>
+
+<!-- Фильтры -->
+<form method="get" class="row mb-4">
+    <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Поиск по имени или email..." asp-for="SearchString" />
+    </div>
+    <div class="col-md-3">
+        <select class="form-control" asp-for="RoleFilter">
+            <option value="">Все роли</option>
+            <option value="Admin">Администраторы</option>
+            <option value="Client">Клиенты</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <input type="date" class="form-control" asp-for="RegistrationDate" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-primary w-100">Поиск</button>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Email</th>
+                        <th>Телефон</th>
+                        <th>Роль</th>
+                        <th>Дата регистрации</th>
+                        <th>Заказов</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.Id.Substring(0, 8)...</td>
+                            <td>@user.FirstName @user.LastName</td>
+                            <td>@user.Email</td>
+                            <td>@(user.PhoneNumber ?? "Не указан")</td>
+                            <td>
+                                @if (user.IsAdmin)
+                                {
+                                    <span class="badge bg-danger">Администратор</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Клиент</span>
+                                }
+                            </td>
+                            <td>@user.RegistrationDate.ToString("dd.MM.yyyy")</td>
+                            <td>@user.OrdersCount</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-page="Edit" asp-route-id="@user.Id"
+                                       class="btn btn-outline-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="post" asp-page-handler="ToggleRole"
+                                          asp-route-userId="@user.Id"
+                                          onsubmit="return confirm('Изменить роль пользователя?');">
+                                        <button type="submit" class="btn btn-outline-@(user.IsAdmin ? "warning" : "success")">
+                                            <i class="fas fa-user-@(user.IsAdmin ? "shield" : "edit")"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Пагинация -->
+        <nav>
+            <ul class="pagination justify-content-center">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           href="?currentPage=@i&searchString=@Model.SearchString&roleFilter=@Model.RoleFilter&registrationDate=@Model.RegistrationDate?.ToString("yyyy-MM-dd")">
+                            @i
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

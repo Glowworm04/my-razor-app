@@ -1,0 +1,149 @@
+﻿@page
+@model InternerShop.Pages.Catalog.DetailsModel
+@{
+    ViewData["Title"] = "Детали товара";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Изображения товара -->
+            @if (Model.Product.ProductImages.Any())
+            {
+                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < Model.Product.ProductImages.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <img src="@Model.Product.ProductImages.ElementAt(i).ImageUrl"
+                                     class="d-block w-100"
+                                     alt="@Model.Product.ProductImages.ElementAt(i).AltText"
+                                     style="height: 400px; object-fit: cover;">
+                            </div>
+                        }
+                    </div>
+                    @if (Model.Product.ProductImages.Count > 1)
+                    {
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h1>@Model.Product.Name</h1>
+            <p class="text-muted">Категория: @Model.Product.Category.Name</p>
+
+            <h3 class="text-primary">@Model.Product.Price.ToString("C")</h3>
+
+            <div class="mb-3">
+                @if (Model.Product.StockQuantity > 0)
+                {
+                    <span class="badge bg-success">В наличии (@Model.Product.StockQuantity шт.)</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Нет в наличии</span>
+                }
+            </div>
+
+            <p>@Model.Product.Description</p>
+
+            @if (Model.Product.StockQuantity > 0)
+            {
+                <form method="post" asp-page="/Cart/AddToCart" class="row g-3 align-items-center">
+                    <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+
+                    <div class="col-auto">
+                        <label for="quantity" class="col-form-label">Количество:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" class="form-control" id="quantity" name="quantity"
+                               value="1" min="1" max="@Model.Product.StockQuantity" style="width: 80px;">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary btn-lg">Добавить в корзину</button>
+                    </div>
+                </form>
+            }
+
+            <div class="mt-4">
+                <h5>Характеристики:</h5>
+                <ul>
+                    <li>Дата добавления: @Model.Product.CreatedDate.ToString("dd.MM.yyyy")</li>
+                    <li>Последнее обновление: @Model.Product.UpdatedDate.ToString("dd.MM.yyyy")</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Отзывы -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Отзывы</h3>
+
+            @if (Model.Reviews.Any())
+            {
+                foreach (var review in Model.Reviews)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title">@review.User.FirstName @review.User.LastName</h5>
+                                <div>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span class="@(i <= review.Rating ? "text-warning" : "text-muted")">★</span>
+                                    }
+                                </div>
+                            </div>
+                            <p class="card-text">@review.Comment</p>
+                            <small class="text-muted">@review.ReviewDate.ToString("dd.MM.yyyy HH:mm")</small>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Пока нет отзывов об этом товаре.</p>
+            }
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="mt-4">
+                    <h5>Оставить отзыв</h5>
+                    <form method="post" asp-page-handler="AddReview">
+                        <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Оценка:</label>
+                            <select class="form-control" id="rating" name="rating" style="width: auto;">
+                                <option value="5">5 - Отлично</option>
+                                <option value="4">4 - Хорошо</option>
+                                <option value="3">3 - Удовлетворительно</option>
+                                <option value="2">2 - Плохо</option>
+                                <option value="1">1 - Ужасно</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Комментарий:</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <p><a href="/Identity/Account/Login">Войдите</a>, чтобы оставить отзыв.</p>
+            }
+        </div>
+    </div>
+</div>

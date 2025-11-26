@@ -1,0 +1,75 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная страница";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Добро пожаловать в наш интернет-магазин!</h1>
+    <p>Лучшие товары по выгодным ценам</p>
+</div>
+
+<!-- Новостная лента -->
+<section class="my-5">
+    <h2>Последние новости</h2>
+    <div class="row">
+        @foreach (var newsItem in Model.LatestNews)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@newsItem.Title</h5>
+                        <p class="card-text">@newsItem.Content.Substring(0, Math.Min(100, newsItem.Content.Length))...</p>
+                        <small class="text-muted">@newsItem.PublishedDate.ToString("dd.MM.yyyy")</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Популярные товары -->
+<section class="my-5">
+    <h2>Популярные товары</h2>
+    <div class="row">
+        @foreach (var product in Model.PopularProducts)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    @if (product.ProductImages.Any())
+                    {
+                        <img src="@product.ProductImages.First().ImageUrl" class="card-img-top" alt="@product.ProductImages.First().AltText" style="height: 200px; object-fit: cover;">
+                    }
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text flex-grow-1">@product.Description?.Substring(0, Math.Min(50, product.Description.Length))...</p>
+                        <div class="mt-auto">
+                            <p class="card-text"><strong>@product.Price.ToString("C")</strong></p>
+                            <a href="/Catalog/Details?id=@product.ProductId" class="btn btn-primary">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Скидки и промо-коды -->
+<section class="my-5">
+    <h2>Акции и скидки</h2>
+    <div class="row">
+        @foreach (var discount in Model.ActiveDiscounts)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">@discount.Name</h5>
+                        <p class="card-text">@discount.Description</p>
+                        <p class="card-text"><strong>Скидка: @discount.DiscountPercentage%</strong></p>
+                        <small class="text-muted">Действует до: @discount.EndDate.ToString("dd.MM.yyyy")</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

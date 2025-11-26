@@ -1,0 +1,36 @@
+﻿@page
+@model InternerShop.Pages.Order.ConfirmationModel
+@{
+    ViewData["Title"] = "Заказ подтвержден";
+}
+
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-success">
+                <div class="card-body py-5">
+                    <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
+                    <h1 class="card-title text-success">Заказ успешно оформлен!</h1>
+                    <p class="card-text lead">Спасибо за ваш заказ. Мы свяжемся с вами в ближайшее время.</p>
+
+                    <div class="alert alert-info mt-4">
+                        <h5>Детали заказа</h5>
+                        <p><strong>Номер заказа:</strong> #@Model.OrderId</p>
+                        <p><strong>Дата заказа:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
+                        <p><strong>Сумма заказа:</strong> @Model.TotalAmount.ToString("C")</p>
+                        <p><strong>Статус:</strong> <span class="badge bg-warning">@Model.OrderStatus</span></p>
+                    </div>
+
+                    <div class="mt-4">
+                        <p>На вашу почту @Model.Email отправлено письмо с подтверждением заказа.</p>
+                    </div>
+
+                    <div class="mt-5">
+                        <a href="/Catalog" class="btn btn-primary btn-lg">Продолжить покупки</a>
+                        <a href="/Order/Details?id=@Model.OrderId" class="btn btn-outline-secondary btn-lg">Посмотреть детали заказа</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

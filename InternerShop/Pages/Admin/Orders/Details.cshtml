@@ -1,0 +1,114 @@
+﻿@page
+@model InternerShop.Pages.Admin.Orders.DetailsModel
+@{
+    ViewData["Title"] = "Детали заказа";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Заказ #@Model.Order.OrderId</h2>
+    <a asp-page="Index" class="btn btn-secondary">Назад к списку</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Товары в заказе</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                <th>Цена</th>
+                                <th>Количество</th>
+                                <th>Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if (item.Product.ProductImages.Any())
+                                            {
+                                                <img src="@item.Product.ProductImages.First().ImageUrl"
+                                                     class="me-3"
+                                                     style="width: 50px; height: 50px; object-fit: cover;"
+                                                     alt="@item.Product.Name">
+                                            }
+                                            <div>
+                                                <strong>@item.Product.Name</strong><br>
+                                                <small class="text-muted">@item.Product.Category.Name</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>@item.UnitPrice.ToString("C")</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@((item.Quantity * item.UnitPrice).ToString("C"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Итого:</strong></td>
+                                <td><strong>@Model.Order.TotalAmount.ToString("C")</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Информация о заказе</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" asp-for="OrderId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Статус заказа</label>
+                        <select asp-for="OrderStatus" class="form-control">
+                            <option value="Pending">Ожидающий</option>
+                            <option value="Processing">В обработке</option>
+                            <option value="Shipped">Отправлен</option>
+                            <option value="Delivered">Доставлен</option>
+                            <option value="Cancelled">Отменен</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Дата заказа</label>
+                        <input type="text" class="form-control" value="@Model.Order.OrderDate.ToString("dd.MM.yyyy HH:mm")" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Общая сумма</label>
+                        <input type="text" class="form-control" value="@Model.Order.TotalAmount.ToString("C")" readonly>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Обновить статус</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Информация о клиенте</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Имя:</strong> @Model.Order.User.FirstName @Model.Order.User.LastName</p>
+                <p><strong>Email:</strong> @Model.Order.User.Email</p>
+                <p><strong>Телефон:</strong> @(Model.Order.User.PhoneNumber ?? "Не указан")</p>
+                <p><strong>Дата регистрации:</strong> @Model.Order.User.RegistrationDate.ToString("dd.MM.yyyy")</p>
+            </div>
+        </div>
+    </div>
+</div>

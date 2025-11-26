@@ -1,0 +1,128 @@
+﻿@page
+@model InternerShop.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Панель управления";
+    Layout = "_AdminLayout";
+}
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalOrders</h4>
+                        <p class="card-text">Всего заказов</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-shopping-cart fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalProducts</h4>
+                        <p class="card-text">Товаров</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-box fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalUsers</h4>
+                        <p class="card-text">Пользователей</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.PendingOrders</h4>
+                        <p class="card-text">Ожидающие заказы</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Последние заказы</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentOrders.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var order in Model.RecentOrders)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Заказ #@order.OrderId</h6>
+                                    <small class="text-muted">@order.User.FirstName @order.User.LastName</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-@(order.OrderStatus == "Pending" ? "warning" : "success")">@order.OrderStatus</span>
+                                    <div class="text-primary fw-bold">@order.TotalAmount.ToString("C")</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">Нет recent заказов</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Статистика по товарам</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Товары с низким запасом:</strong>
+                    <span class="badge bg-danger ms-2">@Model.LowStockProducts</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Активных скидок:</strong>
+                    <span class="badge bg-success ms-2">@Model.ActiveDiscounts</span>
+                </div>
+                <div class="mb-3">
+                    <strong>Опубликованных новостей:</strong>
+                    <span class="badge bg-info ms-2">@Model.PublishedNews</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

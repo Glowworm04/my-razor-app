@@ -1,0 +1,128 @@
+﻿@page
+@model InternerShop.Pages.Order.CheckoutModel
+@{
+    ViewData["Title"] = "Оформление заказа";
+}
+
+<div class="container">
+    <h1>Оформление заказа</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Данные для доставки</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="OrderInput.FirstName" class="form-label">Имя *</label>
+                                <input asp-for="OrderInput.FirstName" class="form-control" />
+                                <span asp-validation-for="OrderInput.FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="OrderInput.LastName" class="form-label">Фамилия *</label>
+                                <input asp-for="OrderInput.LastName" class="form-control" />
+                                <span asp-validation-for="OrderInput.LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OrderInput.Email" class="form-label">Email *</label>
+                            <input asp-for="OrderInput.Email" class="form-control" />
+                            <span asp-validation-for="OrderInput.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OrderInput.Phone" class="form-label">Телефон *</label>
+                            <input asp-for="OrderInput.Phone" class="form-control" />
+                            <span asp-validation-for="OrderInput.Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OrderInput.Address" class="form-label">Адрес доставки *</label>
+                            <textarea asp-for="OrderInput.Address" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="OrderInput.Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OrderInput.City" class="form-label">Город *</label>
+                            <input asp-for="OrderInput.City" class="form-control" />
+                            <span asp-validation-for="OrderInput.City" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="OrderInput.PostalCode" class="form-label">Почтовый индекс</label>
+                                <input asp-for="OrderInput.PostalCode" class="form-control" />
+                                <span asp-validation-for="OrderInput.PostalCode" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="OrderInput.Country" class="form-label">Страна *</label>
+                                <input asp-for="OrderInput.Country" class="form-control" value="Россия" />
+                                <span asp-validation-for="OrderInput.Country" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OrderInput.Notes" class="form-label">Примечания к заказу</label>
+                            <textarea asp-for="OrderInput.Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="OrderInput.Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" asp-for="OrderInput.AgreeToTerms" />
+                            <label class="form-check-label" asp-for="OrderInput.AgreeToTerms">
+                                Я согласен с <a href="/Privacy">условиями обработки персональных данных</a> *
+                            </label>
+                            <span asp-validation-for="OrderInput.AgreeToTerms" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Подтвердить заказ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Ваш заказ</h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <span class="fw-bold">@item.Product.Name</span>
+                                <br>
+                                <small class="text-muted">@item.Quantity × @item.Product.Price.ToString("C")</small>
+                            </div>
+                            <span>@((item.Quantity * item.Product.Price).ToString("C"))</span>
+                        </div>
+                    }
+
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Подытог:</span>
+                        <span>@Model.CartItems.Sum(i => i.Quantity * i.Product.Price).ToString("C")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Доставка:</span>
+                        <span class="text-success">Бесплатно</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Итого:</strong>
+                        <strong class="text-primary">@Model.CartItems.Sum(i => i.Quantity * i.Product.Price).ToString("C")</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

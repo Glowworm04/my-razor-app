@@ -1,0 +1,96 @@
+﻿@page
+@model InternerShop.Pages.Catalog.IndexModel
+@{
+    ViewData["Title"] = "Каталог товаров";
+}
+
+<div class="container">
+    <h1>Каталог товаров</h1>
+
+    <!-- Поиск и фильтры -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="get" class="d-flex">
+                <input type="text" class="form-control me-2" placeholder="Поиск товаров..." asp-for="SearchString" />
+                <select class="form-control me-2" asp-for="CategoryId" asp-items="Model.Categories">
+                    <option value="">Все категории</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Поиск</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <select class="form-control" onchange="window.location.href=this.value">
+                <option value="?sortOrder=name">Сортировка по имени</option>
+                <option value="?sortOrder=price_asc">Цена по возрастанию</option>
+                <option value="?sortOrder=price_desc">Цена по убыванию</option>
+                <option value="?sortOrder=newest">Сначала новые</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Список товаров -->
+    <div class="row">
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 product-card">
+                    @if (product.ProductImages.Any())
+                    {
+                        <img src="@product.ProductImages.First().ImageUrl" class="card-img-top"
+                             alt="@product.ProductImages.First().AltText"
+                             style="height: 200px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <img src="/images/placeholder.jpg" class="card-img-top"
+                             alt="Нет изображения"
+                             style="height: 200px; object-fit: cover;">
+                    }
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text flex-grow-1">
+                            @product.Description?.Substring(0, Math.Min(80, product.Description?.Length ?? 0))...
+                        </p>
+                        <div class="mt-auto">
+                            <p class="card-text">
+                                <strong class="text-primary">@product.Price.ToString("C")</strong>
+                                @if (product.StockQuantity > 0)
+                                {
+                                    <span class="badge bg-success">В наличии</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Нет в наличии</span>
+                                }
+                            </p>
+                            <div class="d-grid gap-2">
+                                <a href="/Catalog/Details?id=@product.ProductId" class="btn btn-outline-primary">Подробнее</a>
+                                @if (product.StockQuantity > 0)
+                                {
+                                    <form method="post" asp-page="/Cart/AddToCart">
+                                        <input type="hidden" name="productId" value="@product.ProductId" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-success w-100">В корзину</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Пагинация -->
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="?currentPage=@i&searchString=@Model.SearchString&categoryId=@Model.CategoryId">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
